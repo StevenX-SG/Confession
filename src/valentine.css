@@ -1,0 +1,58 @@
+/* Midnight Romance Theme Styles */
+
+/* Star element base class (Req 7.1, 7.3) */
+.star {
+  position: absolute;
+  border-radius: 50%;
+  will-change: opacity;
+  background: white;
+}
+
+/*
+ * Meteor travel animation. Defined here (not via Tailwind's keyframes config)
+ * because the MeteorShower component applies it through an inline `animation:`
+ * string rather than an `animate-*` utility class — Tailwind would otherwise
+ * purge the generated @keyframes from the production build.
+ *
+ * The outer wrapper travels diagonally from the top-right toward the
+ * bottom-left across the full viewport; the inner streak is rotated 45deg to
+ * align the glowing trail with the travel direction.
+ */
+@keyframes meteorDiagonal {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-100vw, 100vh);
+    opacity: 0;
+  }
+}
+
+/*
+ * fingerBounce — subtle vertical bounce + opacity pulse for the Finger_Guide
+ * pointing indicator (☝️) that draws the Recipient's attention toward the
+ * calendar during the surprise reveal (Req 5.2).
+ *
+ * Defined here alongside meteorDiagonal so the keyframe is always present in
+ * the production build. The FingerGuide component applies it through the
+ * `animate-fingerBounce` Tailwind utility, whose `animation` shorthand is
+ * declared in tailwind.config.js and references this keyframe by name.
+ */
+@keyframes fingerBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
