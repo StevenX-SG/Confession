@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import StarfieldCanvas from "./StarfieldCanvas";
 import GlassCard from "./GlassCard";
-import { translations, chromeLang, type DisplayMode } from "../i18n";
+import { translations, chromeLang, dateLocale, type DisplayMode } from "../i18n";
 import { formatDateHuman } from "../utils/dateUtils";
 
 export interface DatePassProps {
@@ -59,10 +59,7 @@ function isWebShareSupported(): boolean {
  */
 export default function DatePass({ from, to, date, venue, spot, mode }: DatePassProps) {
   const t = translations[chromeLang(mode)];
-  const humanDate = formatDateHuman(
-    date,
-    chromeLang(mode) === "zh" ? "zh-CN" : "en-GB"
-  );
+  const humanDate = formatDateHuman(date, dateLocale(mode));
 
   const [copied, setCopied] = useState(false);
   // Resolve Web Share support once on mount (Requirements 9.3, 9.4).

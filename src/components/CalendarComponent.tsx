@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { translations, chromeLang, type DisplayMode } from "../i18n";
+import { translations, chromeLang, dateLocale, type DisplayMode } from "../i18n";
 import {
   generateCalendarGrid,
   formatDateHuman,
@@ -229,7 +229,7 @@ export default function CalendarComponent({
               onClick={() => handleSelect(day.iso, day.isPast)}
               disabled={day.isPast}
               aria-pressed={day.isSelected}
-              aria-label={formatDateHuman(day.iso, chromeLang(mode) === "zh" ? "zh-CN" : "en-GB")}
+              aria-label={formatDateHuman(day.iso, dateLocale(mode))}
               aria-current={day.isToday ? "date" : undefined}
               data-testid={`calendar-day-${day.iso}`}
               data-past={day.isPast ? "true" : "false"}
@@ -247,7 +247,7 @@ export default function CalendarComponent({
         <p className="text-center text-sm text-white/80" data-testid="calendar-selected-date">
           {t.selectedDateLabel.replace(
             "{date}",
-            formatDateHuman(selectedDate, chromeLang(mode) === "zh" ? "zh-CN" : "en-GB")
+            formatDateHuman(selectedDate, dateLocale(mode))
           )}
         </p>
       )}

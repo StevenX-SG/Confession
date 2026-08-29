@@ -1,5 +1,5 @@
 "use client";
-import { translations, chromeLang, type DisplayMode } from "../i18n";
+import { translations, chromeLang, dateLocale, type DisplayMode } from "../i18n";
 import { formatDateHuman } from "../utils/dateUtils";
 
 export interface ConfirmationScreenProps {
@@ -54,10 +54,7 @@ export default function ConfirmationScreen({
   mode,
 }: ConfirmationScreenProps) {
   const t = translations[chromeLang(mode)];
-  const humanDate = formatDateHuman(
-    date,
-    chromeLang(mode) === "zh" ? "zh-CN" : "en-GB"
-  );
+  const humanDate = formatDateHuman(date, dateLocale(mode));
 
   return (
     <div className="flex flex-col gap-5" data-testid="confirmation-screen">
