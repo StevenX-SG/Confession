@@ -28,6 +28,7 @@ This is a V2 evolution of [Will You Be My Valentine?](https://github.com/StevenX
 3. **Interactive Flow:** They dodge the "No" button, click "Yes", and select their preferred date and venue.
 4. **Get the Confirmation:** They send you back the generated acceptance link to reveal your official "Date Pass" ticket!
 
+![Date Pass preview](image.png)
 
 
 ---
