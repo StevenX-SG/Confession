@@ -173,13 +173,19 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
         <LanguageSelect mode={mode} onChange={onModeChange} />
       </nav>
 
-      <div className="relative z-20 flex min-h-screen flex-col items-center justify-center px-4 py-16">
-        <GlassCard>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-6 text-center">
+      {/* Scroll container: centers the card when it fits the viewport and
+          becomes scrollable (without clipping the top) when the content is
+          taller than the screen — e.g. once the generated link appears, or on
+          short/zoomed windows. Body-level overflow is hidden globally, so this
+          view manages its own vertical scroll instead of relying on the page. */}
+      <div className="relative z-20 h-screen overflow-y-auto overscroll-contain">
+        <div className="flex min-h-full flex-col items-center justify-center px-4 py-8">
+          <GlassCard>
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-4 text-center">
             {t.creationTitle}
           </h1>
 
-          <form onSubmit={handleGenerate} className="flex flex-col gap-5">
+          <form onSubmit={handleGenerate} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <label htmlFor="sender-name" className="text-sm font-semibold text-white/80">
                 {t.senderNameLabel}
@@ -293,7 +299,7 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
           </form>
 
           {generatedLink && (
-            <div className="mt-6 flex flex-col gap-3">
+            <div className="mt-4 flex flex-col gap-3">
               <input
                 ref={linkInputRef}
                 type="text"
@@ -318,7 +324,8 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
               </button>
             </div>
           )}
-        </GlassCard>
+          </GlassCard>
+        </div>
       </div>
     </div>
   );
