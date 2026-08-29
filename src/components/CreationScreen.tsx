@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import StarfieldCanvas from "./StarfieldCanvas";
 import GlassCard from "./GlassCard";
+import FitToScreen from "./FitToScreen";
 import { translations, chromeLang, LANGUAGE_OPTIONS, type DisplayMode } from "../i18n";
 import { buildProposalUrl, validateName } from "../utils/urlParams";
 
@@ -173,14 +174,12 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
         <LanguageSelect mode={mode} onChange={onModeChange} />
       </nav>
 
-      {/* Scroll container: centers the card when it fits the viewport and
-          becomes scrollable (without clipping the top) when the content is
-          taller than the screen — e.g. once the generated link appears, or on
-          short/zoomed windows. Body-level overflow is hidden globally, so this
-          view manages its own vertical scroll instead of relying on the page. */}
-      <div className="relative z-20 h-screen overflow-y-auto overscroll-contain">
-        <div className="flex min-h-full flex-col items-center justify-center px-4 py-8">
-          <GlassCard>
+      {/* Fit-to-screen: the card scales down (never up) so the whole form —
+          including the generated link + Copy button — stays centered and fully
+          visible without scrolling, even on small phones (e.g. iPhone SE) and
+          zoomed-in windows. */}
+      <FitToScreen className="relative z-20">
+          <GlassCard className="!w-[min(92vw,560px)]">
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-4 text-center">
             {t.creationTitle}
           </h1>
@@ -325,8 +324,7 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
             </div>
           )}
           </GlassCard>
-        </div>
-      </div>
+      </FitToScreen>
     </div>
   );
 }
