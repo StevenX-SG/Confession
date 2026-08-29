@@ -289,10 +289,11 @@ export function useDodge(config: UseDodgeConfig): UseDodgeReturn {
     };
   }, [enabled, handleCursorMove]);
 
-  // Force a dodge check at a given cursor position (used when entering a dodge
-  // stage). The entry teleport COUNTS as the stage's first dodge, so a stage
-  // configured with requiredDodges: N shows N total moves (1 teleport + N-1
-  // cursor-driven dodges).
+  // Reposition the button at a given cursor position when entering a dodge stage.
+  // This ONLY moves the button away from the last click position so the user
+  // can't immediately re-click; it does NOT count toward requiredDodges. That
+  // way a stage configured with requiredDodges: N requires exactly N genuine
+  // cursor-driven dodges from the user (matching the spec's movement counts).
   const forceCheck = useCallback(
     (cursorX: number, cursorY: number) => {
       if (!enabled) return;
@@ -321,14 +322,9 @@ export function useDodge(config: UseDodgeConfig): UseDodgeReturn {
 
       if (newOffset.x !== currentOff.x || newOffset.y !== currentOff.y) {
         setOffset(newOffset);
-        const newCount = dodgeCountRef.current + 1;
-        setDodgeCount(newCount);
-        if (newCount >= requiredDodges) {
-          onDodgeCompleteRef.current();
-        }
       }
     },
-    [enabled, speedMultiplier, requiredDodges]
+    [enabled, speedMultiplier]
   );
 
   return {

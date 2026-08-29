@@ -8,14 +8,17 @@ import { useDodge } from '../hooks/useDodge';
  * - Stage 0: no dodge
  * - Stage 1: no dodge
  * - Stage 2: dodge mode, 4 required dodges at 1.0x speed
- * - Stage 3: faster dodge mode, 4 required dodges at 1.3x speed
+ * - Stage 3: faster dodge mode, 5 required dodges at 1.3x speed
+ *
+ * `requiredDodges` is the number of genuine cursor-driven dodges the user must
+ * perform; the automatic teleport on stage entry does NOT count (see useDodge).
  */
 const DODGE_STAGES = {
   stages: [
     { dodgeEnabled: false, requiredDodges: 0, speedMultiplier: 1.0 },
     { dodgeEnabled: false, requiredDodges: 0, speedMultiplier: 1.0 },
     { dodgeEnabled: true, requiredDodges: 4, speedMultiplier: 1.0 },
-    { dodgeEnabled: true, requiredDodges: 4, speedMultiplier: 1.3 },
+    { dodgeEnabled: true, requiredDodges: 5, speedMultiplier: 1.3 },
   ],
 } as const;
 
@@ -31,7 +34,7 @@ interface NoButtonProps {
  * Implements a 4-stage button that progressively resists being clicked:
  * - First click: advances from "No" to "Are you sure?"
  * - Second click: enters dodge mode requiring 4 dodges before clickable
- * - Third click: enters faster dodge mode requiring 4 dodges
+ * - Third click: enters faster dodge mode requiring 5 dodges
  * - Final click: triggers rejection callback
  *
  * Uses CSS transform: translate() for position (GPU-friendly).
