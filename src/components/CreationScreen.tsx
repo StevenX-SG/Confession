@@ -73,6 +73,11 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
 
   const [senderName, setSenderName] = useState("");
   const [recipientName, setRecipientName] = useState("");
+  const [gender, setGender] = useState<'man' | 'woman'>('man');
+  // Sender-only prank toggle. When on, the generated link carries `mode=evil`
+  // so the recipient's final "No" secretly leads to the happy ending. This flag
+  // never appears in the recipient experience.
+  const [evilMode, setEvilMode] = useState(false);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -103,10 +108,12 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
       if (!canSubmit) return;
       // Trim so leading/trailing whitespace doesn't leak into the shared link,
       // while the validity check above still guarantees non-empty names.
-      setGeneratedLink(buildProposalUrl(senderName.trim(), recipientName.trim()));
+      setGeneratedLink(
+        buildProposalUrl(senderName.trim(), recipientName.trim(), gender, evilMode)
+      );
       setCopied(false);
     },
-    [canSubmit, senderName, recipientName]
+    [canSubmit, senderName, recipientName, gender, evilMode]
   );
 
   const showCopiedFeedback = useCallback(() => {
@@ -188,6 +195,42 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
             </div>
 
             <div className="flex flex-col gap-2">
+              <span className="text-sm font-semibold text-white/80">{t.genderLabel}</span>
+              <div
+                role="radiogroup"
+                aria-label={t.genderLabel}
+                className="grid grid-cols-2 gap-3"
+              >
+                {(['man', 'woman'] as const).map((g) => {
+                  const active = gender === g;
+                  return (
+                    <button
+                      key={g}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => {
+                        setGender(g);
+                        // Any previously generated link used the old gender; clear it
+                        // so the sender regenerates with the correct wording.
+                        setGeneratedLink(null);
+                        setCopied(false);
+                      }}
+                      data-testid={`gender-${g}`}
+                      className={`rounded-xl px-4 py-3 min-h-[44px] border font-semibold transition-all duration-150 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-rose-400/50 ${
+                        active
+                          ? "bg-rose-500/25 border-rose-300 text-white shadow-lg"
+                          : "bg-slate-800/50 border-white/10 text-white/80 hover:bg-slate-700/70"
+                      }`}
+                    >
+                      {g === "man" ? t.genderMan : t.genderWoman}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
               <label htmlFor="recipient-name" className="text-sm font-semibold text-white/80">
                 {t.recipientNameLabel}
               </label>
@@ -199,6 +242,45 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
                 autoComplete="off"
                 className="w-full rounded-xl bg-slate-800/60 backdrop-blur-sm border border-white/15 text-white placeholder-white/30 px-4 py-3 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-rose-400/50 focus:border-rose-400/50 transition"
               />
+            </div>
+
+            {/* Evil Mode toggle — sender-only prank switch. Never surfaced to the
+                recipient; it just decides whether the final "No" leads to the
+                happy ending. */}
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={evilMode}
+                data-testid="evil-mode-toggle"
+                onClick={() => {
+                  setEvilMode((prev) => !prev);
+                  // Any previously generated link used the old setting; clear it
+                  // so the sender regenerates with the correct mode.
+                  setGeneratedLink(null);
+                  setCopied(false);
+                }}
+                className={`flex items-center justify-between gap-3 rounded-xl px-4 py-3 min-h-[44px] border font-semibold transition-all duration-150 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-rose-400/50 ${
+                  evilMode
+                    ? "bg-rose-500/25 border-rose-300 text-white shadow-lg"
+                    : "bg-slate-800/50 border-white/10 text-white/80 hover:bg-slate-700/70"
+                }`}
+              >
+                <span>{t.evilModeLabel}</span>
+                <span
+                  aria-hidden="true"
+                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-150 ${
+                    evilMode ? "bg-rose-400" : "bg-slate-600"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform duration-150 ${
+                      evilMode ? "translate-x-5" : "translate-x-0.5"
+                    }`}
+                  />
+                </span>
+              </button>
+              <p className="text-xs text-white/50 leading-relaxed">{t.evilModeHint}</p>
             </div>
 
             <button

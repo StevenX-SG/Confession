@@ -79,6 +79,12 @@ interface UseDodgeConfig {
   requiredDodges: number;
   speedMultiplier: number;
   onDodgeComplete: () => void;
+  /**
+   * Identifier for the current dodge stage. When it changes, dodge progress is
+   * reset. Keying on this (rather than requiredDodges) means two consecutive
+   * stages that require the SAME number of dodges still reset correctly.
+   */
+  stageKey?: number | string;
 }
 
 interface UseDodgeReturn {
@@ -90,7 +96,7 @@ interface UseDodgeReturn {
 }
 
 export function useDodge(config: UseDodgeConfig): UseDodgeReturn {
-  const { enabled, requiredDodges, speedMultiplier, onDodgeComplete } = config;
+  const { enabled, requiredDodges, speedMultiplier, onDodgeComplete, stageKey } = config;
 
   const buttonRef = useRef<HTMLButtonElement>(null!);
   const [offset, setOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -131,14 +137,17 @@ export function useDodge(config: UseDodgeConfig): UseDodgeReturn {
     }
   }, [enabled]);
 
-  // Reset dodgeCount when requiredDodges changes (stage transition within dodge mode)
-  const prevRequiredDodges = useRef(requiredDodges);
+  // Reset dodgeCount when entering a new dodge stage. Keyed on `stageKey` (the
+  // caller's stage id) so consecutive stages requiring the SAME number of
+  // dodges still reset. Falls back to requiredDodges when no stageKey is given.
+  const resetToken = stageKey ?? requiredDodges;
+  const prevResetToken = useRef(resetToken);
   useEffect(() => {
-    if (enabled && requiredDodges !== prevRequiredDodges.current) {
+    if (enabled && resetToken !== prevResetToken.current) {
       setDodgeCount(0);
-      prevRequiredDodges.current = requiredDodges;
     }
-  }, [enabled, requiredDodges]);
+    prevResetToken.current = resetToken;
+  }, [enabled, resetToken]);
 
   // Core dodge handler
   const handleCursorMove = useCallback(
@@ -280,9 +289,10 @@ export function useDodge(config: UseDodgeConfig): UseDodgeReturn {
     };
   }, [enabled, handleCursorMove]);
 
-  // Force a dodge check at a given cursor position (used when entering dodge mode
-  // while cursor is already hovering over the button).
-  // Does NOT increment dodgeCount — this is just initial positioning, not a user-triggered dodge.
+  // Force a dodge check at a given cursor position (used when entering a dodge
+  // stage). The entry teleport COUNTS as the stage's first dodge, so a stage
+  // configured with requiredDodges: N shows N total moves (1 teleport + N-1
+  // cursor-driven dodges).
   const forceCheck = useCallback(
     (cursorX: number, cursorY: number) => {
       if (!enabled) return;
@@ -311,9 +321,14 @@ export function useDodge(config: UseDodgeConfig): UseDodgeReturn {
 
       if (newOffset.x !== currentOff.x || newOffset.y !== currentOff.y) {
         setOffset(newOffset);
+        const newCount = dodgeCountRef.current + 1;
+        setDodgeCount(newCount);
+        if (newCount >= requiredDodges) {
+          onDodgeCompleteRef.current();
+        }
       }
     },
-    [enabled, speedMultiplier]
+    [enabled, speedMultiplier, requiredDodges]
   );
 
   return {

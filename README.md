@@ -6,7 +6,7 @@ It's not that you have no hope, but rather the opposite gender has too high expe
 
 I myself have yet to find one despite creating this.
 
-It was inspired by all the viral couples' date night reels on Instagram/Manus Date ideas, built using [@hohjiada](https://www.instagram.com/hohjiada/)'s concept, and based on [will-you-be-my-valentine](https://github.com/saurabhnemade/will-you-be-my-valentine).
+This is a V2 evolution of [Will You Be My Valentine?](https://github.com/StevenX-SG/Will-you-be-my-valentine), rebuilt from the ground up after Manus raised the bar on the confession game trend. It was inspired by all the viral couples' date night reels on Instagram/Manus Date ideas, built using [@hohjiada](https://www.instagram.com/hohjiada/)'s concept, and based on [will-you-be-my-valentine](https://github.com/saurabhnemade/will-you-be-my-valentine).
 
 ---
 
@@ -27,6 +27,16 @@ It was inspired by all the viral couples' date night reels on Instagram/Manus Da
 2. **Send the Link:** Send your generated link to your crush.
 3. **Interactive Flow:** They dodge the "No" button, click "Yes", and select their preferred date and venue.
 4. **Get the Confirmation:** They send you back the generated acceptance link to reveal your official "Date Pass" ticket!
+
+
+
+---
+
+## 🌍 Localisation
+
+Supports 8 languages: English, Chinese, Spanish, French, Italian, Portuguese, German, and Indonesian.
+
+> ⚠️ **Translation Disclaimer:** Translations were AI-generated and may not be fully accurate. If you spot an error, feel free to open a PR or raise an issue!
 
 ---
 

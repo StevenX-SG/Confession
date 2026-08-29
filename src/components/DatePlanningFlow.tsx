@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useRef, useState } from "react";
 import GlassCard from "./GlassCard";
+import StarfieldCanvas from "./StarfieldCanvas";
 import DatePass from "./DatePass";
 import CalendarComponent from "./CalendarComponent";
 import FingerGuide from "./FingerGuide";
@@ -57,6 +58,8 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
   const [step, setStep] = useState<PlanningStep>("calendar");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
+  // Optional precise meeting spot within the venue (Req: large-venue rendezvous).
+  const [selectedSpot, setSelectedSpot] = useState<string>("");
 
   // The FingerGuide hint points at the calendar until the Recipient interacts
   // with it for the first time (Requirement 5.3). `calendarRef` anchors the
@@ -95,27 +98,45 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
   // Pass view (Requirement 8.3).
   const handleConfirm = useCallback(() => {
     if (!selectedDate || !selectedVenue) return;
-    const url = buildConfirmationUrl(from, to, selectedDate, selectedVenue);
+    const url = buildConfirmationUrl(from, to, selectedDate, selectedVenue, selectedSpot);
     window.history.replaceState({}, "", url);
     setStep("done");
-  }, [from, to, selectedDate, selectedVenue]);
+  }, [from, to, selectedDate, selectedVenue, selectedSpot]);
 
   // Once confirmed, hand off to the Date Pass view (task 9.1). The URL has
   // already been updated, so a refresh at this point re-derives `date-pass`.
   if (step === "done" && selectedDate && selectedVenue) {
     return (
-      <DatePass from={from} to={to} date={selectedDate} venue={selectedVenue} mode={mode} />
+      <DatePass from={from} to={to} date={selectedDate} venue={selectedVenue} spot={selectedSpot || undefined} mode={mode} />
     );
   }
 
   return (
     <div
-      className="relative flex min-h-screen flex-col items-center justify-center px-4 py-16"
+      className="relative min-h-screen overflow-hidden"
       data-testid="date-planning-flow"
       data-step={step}
     >
-      {/* GlassCard applies the shared fadeSlideUp entry animation (Req 4.4). */}
-      <GlassCard>
+      {/* Midnight Rose night sky, carried over from the confession so the move
+          into date planning feels seamless — brightened a touch beyond the
+          pre-"Yes" mood. */}
+      <StarfieldCanvas brightened={true} />
+
+      {/* Soft moonlight-blue glow pooling behind the floating card. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 55% 42% at 50% 42%, rgba(120,160,255,0.20) 0%, transparent 70%)",
+        }}
+      />
+
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-16">
+        {/* GlassCard entry animation (Req 4.4). Midnight Rose treatment: deep
+            navy glass with a moonlight-blue border + glow so it floats in the
+            starry sky instead of reading as a productivity panel. */}
+        <GlassCard className="!bg-[#0b1226]/45 !border-sky-200/20 shadow-[0_12px_70px_-12px_rgba(96,140,255,0.45)] ring-1 ring-sky-300/10">
         {/* Calendar step — full monthly grid with month nav + past-date
             disabling (task 6.1), guided by the FingerGuide hint (task 6.2). */}
         {step === "calendar" && (
@@ -136,6 +157,8 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
             selectedVenue={selectedVenue}
             onVenueSelect={handleVenueSelect}
             onContinue={handleVenueContinue}
+            meetingSpot={selectedSpot}
+            onMeetingSpotChange={setSelectedSpot}
             mode={mode}
           />
         )}
@@ -148,6 +171,7 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
             to={to}
             date={selectedDate ?? ""}
             venue={selectedVenue ?? ""}
+            spot={selectedSpot || undefined}
             onConfirm={handleConfirm}
             mode={mode}
           />
@@ -160,6 +184,7 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
         visible={step === "calendar" && guideVisible}
         targetRef={calendarRef}
       />
+      </div>
     </div>
   );
 }

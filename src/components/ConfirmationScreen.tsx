@@ -11,6 +11,8 @@ export interface ConfirmationScreenProps {
   date: string;
   /** Selected venue string (preset choice or custom text). */
   venue: string;
+  /** Optional precise meeting spot within the venue. */
+  spot?: string;
   /**
    * Confirms the plan. Parent-owned: the parent (DatePlanningFlow) performs the
    * URL update via `history.replaceState` and transitions to the Date Pass view
@@ -47,6 +49,7 @@ export default function ConfirmationScreen({
   to,
   date,
   venue,
+  spot,
   onConfirm,
   mode,
 }: ConfirmationScreenProps) {
@@ -84,6 +87,14 @@ export default function ConfirmationScreen({
             {venue}
           </dd>
         </div>
+        {spot && spot.trim().length > 0 && (
+          <div className="flex items-center justify-between gap-4">
+            <dt className="font-semibold text-white/70">{t.meetingPointLabel}</dt>
+            <dd className="text-right font-semibold" data-testid="confirmation-spot">
+              {spot}
+            </dd>
+          </div>
+        )}
       </dl>
 
       <button

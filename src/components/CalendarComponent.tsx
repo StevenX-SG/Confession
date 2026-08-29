@@ -132,9 +132,14 @@ export default function CalendarComponent({
 
   return (
     <div className="flex flex-col gap-5" data-testid="calendar-component">
-      <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
-        {t.calendarTitle}
-      </h1>
+      <div className="text-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-white">
+          {t.calendarTitle}
+        </h1>
+        <p className="mt-1.5 text-sm md:text-base text-white/60">
+          {t.calendarSubtitle}
+        </p>
+      </div>
 
       {/* Month navigation header (Requirement 6.2). */}
       <div className="flex items-center justify-between gap-3">
@@ -144,7 +149,7 @@ export default function CalendarComponent({
           disabled={prevDisabled}
           aria-label="Previous month"
           data-testid="calendar-prev"
-          className="flex items-center justify-center rounded-full bg-slate-700/60 backdrop-blur-sm border border-white/10 text-white text-xl min-h-[44px] min-w-[44px] transition-all duration-150 hover:bg-slate-600/70 active:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-rose-400/50 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-slate-700/60"
+          className="flex items-center justify-center rounded-full bg-white/[0.06] backdrop-blur-sm border border-sky-200/20 text-white text-xl min-h-[44px] min-w-[44px] transition-all duration-150 hover:bg-sky-400/15 hover:border-sky-200/40 active:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-rose-400/50 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/[0.06]"
         >
           &#8249;
         </button>
@@ -162,7 +167,7 @@ export default function CalendarComponent({
           onClick={goNext}
           aria-label="Next month"
           data-testid="calendar-next"
-          className="flex items-center justify-center rounded-full bg-slate-700/60 backdrop-blur-sm border border-white/10 text-white text-xl min-h-[44px] min-w-[44px] transition-all duration-150 hover:bg-slate-600/70 active:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-rose-400/50"
+          className="flex items-center justify-center rounded-full bg-white/[0.06] backdrop-blur-sm border border-sky-200/20 text-white text-xl min-h-[44px] min-w-[44px] transition-all duration-150 hover:bg-sky-400/15 hover:border-sky-200/40 active:scale-[0.96] focus:outline-none focus:ring-2 focus:ring-rose-400/50"
         >
           &#8250;
         </button>
@@ -198,19 +203,23 @@ export default function CalendarComponent({
 
           let stateClasses: string;
           if (day.isSelected) {
-            // Selected: rose accent highlight (Requirement 6.4).
+            // Selected: warm Midnight Rose moment — muted rose gradient, soft
+            // rose glow, white text, gentle scale-up (Requirement 6.4).
             stateClasses =
-              "bg-rose-500 text-white border border-rose-300 shadow-lg scale-[1.03]";
+              "bg-gradient-to-br from-rose-500/90 to-rose-400/80 text-white border border-rose-200/50 shadow-[0_0_22px_-2px_rgba(244,114,182,0.65)] scale-[1.08]";
           } else if (day.isPast) {
-            // Past: visually disabled + non-interactive (Requirement 6.5).
+            // Past: quietly dimmed + non-interactive (Requirement 6.5).
             stateClasses =
-              "bg-slate-800/30 text-white/25 border border-transparent cursor-not-allowed";
+              "bg-transparent text-white/20 border border-transparent cursor-not-allowed";
           } else if (day.isToday) {
+            // Today: a subtle rose ring marks it without stealing focus.
             stateClasses =
-              "bg-slate-700/50 text-white border border-rose-400/60 hover:bg-slate-600/70 hover:scale-[1.03] active:scale-[0.97] cursor-pointer";
+              "bg-white/[0.05] text-white border border-rose-300/50 hover:bg-sky-400/10 hover:border-sky-200/50 hover:shadow-[0_0_16px_-2px_rgba(125,175,255,0.55)] hover:scale-[1.05] active:scale-[0.97] cursor-pointer";
           } else {
+            // Unselected: faint translucent glass; hover blooms a soft
+            // moonlight-blue glow rather than a heavy grey block.
             stateClasses =
-              "bg-slate-800/50 text-white/90 border border-white/10 hover:bg-slate-700/70 hover:scale-[1.03] active:scale-[0.97] cursor-pointer";
+              "bg-white/[0.04] text-white/90 border border-white/10 hover:bg-sky-400/10 hover:border-sky-200/50 hover:shadow-[0_0_16px_-2px_rgba(125,175,255,0.55)] hover:scale-[1.05] active:scale-[0.97] cursor-pointer";
           }
 
           return (
@@ -250,7 +259,7 @@ export default function CalendarComponent({
           onClick={onContinue}
           disabled={!canContinue}
           data-testid="calendar-continue"
-          className="mt-1 w-full rounded-full bg-rose-500/80 backdrop-blur-sm text-white font-bold shadow-lg px-6 py-3 min-h-[44px] border border-white/10 transition-all duration-150 hover:bg-rose-500 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-rose-400/50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-rose-500/80"
+          className="mt-1 w-full rounded-full bg-gradient-to-r from-rose-500 to-rose-400 text-white font-bold shadow-[0_10px_30px_-8px_rgba(244,114,182,0.7)] px-6 py-3 min-h-[44px] border border-rose-200/30 transition-all duration-150 hover:from-rose-400 hover:to-rose-300 hover:scale-[1.02] hover:shadow-[0_12px_36px_-6px_rgba(244,114,182,0.85)] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-rose-300/60 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
         >
           {t.continue}
         </button>

@@ -19,6 +19,21 @@ function isPresetVenue(value: string | null): boolean {
   return value != null && (PRESET_VENUES as readonly string[]).includes(value);
 }
 
+/**
+ * Suggested precise meeting spots per preset venue, so large venues (e.g. Jewel
+ * Changi Airport) get a concrete rendezvous point. Custom/unknown venues fall
+ * back to GENERIC_SPOTS. Tapping a chip fills the free-text field; the spot is
+ * always optional.
+ */
+const SPOT_SUGGESTIONS: Record<string, string[]> = {
+  "Marina Bay": ["Waterfront Promenade", "Merlion Park", "Drop-off point"],
+  "Gardens by the Bay": ["Supertree Grove", "Main entrance", "Flower Dome"],
+  "Jewel Changi Airport": ["Rain Vortex waterfall", "Level 1 drop-off", "Main entrance"],
+  "Sentosa": ["Beach Station", "Cable Car entrance", "Drop-off point"],
+};
+
+const GENERIC_SPOTS = ["Main entrance", "Drop-off point", "Ticketing counter"];
+
 export interface VenueSelectorProps {
   /** Currently selected venue string, or null when nothing is chosen yet. */
   selectedVenue: string | null;
@@ -33,6 +48,10 @@ export interface VenueSelectorProps {
    * components (Requirement 12.3).
    */
   mode: DisplayMode;
+  /** Optional precise meeting spot within the venue (controlled by parent). */
+  meetingSpot: string;
+  /** Reports changes to the optional meeting spot. */
+  onMeetingSpotChange: (spot: string) => void;
 }
 
 /**
@@ -59,6 +78,8 @@ export default function VenueSelector({
   onVenueSelect,
   onContinue,
   mode,
+  meetingSpot,
+  onMeetingSpotChange,
 }: VenueSelectorProps) {
   const t = translations[chromeLang(mode)];
 
@@ -100,6 +121,10 @@ export default function VenueSelector({
   // Continue is enabled iff a non-empty venue is selected: a preset choice, or
   // custom text with at least one non-whitespace character (Requirement 7.4).
   const canContinue = isVenueValid(selectedVenue);
+  // The optional meeting-spot section appears once a valid venue is chosen.
+  const showSpot = canContinue;
+  const spotSuggestions =
+    (selectedVenue && SPOT_SUGGESTIONS[selectedVenue]) || GENERIC_SPOTS;
 
   const optionBase =
     "flex items-center gap-3 w-full text-left rounded-xl px-4 py-3 min-h-[44px] border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-rose-400/50 cursor-pointer active:scale-[0.99]";
@@ -181,6 +206,51 @@ export default function VenueSelector({
             autoComplete="off"
             autoFocus
             data-testid="venue-custom-input"
+            className="w-full rounded-xl bg-slate-800/60 backdrop-blur-sm border border-white/15 text-white placeholder-white/30 px-4 py-3 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-rose-400/50 focus:border-rose-400/50 transition"
+          />
+        </div>
+      )}
+
+      {/* Optional precise meeting spot — appears once a venue is chosen. Never
+          gates Continue; it just lets the Recipient pin where to meet within a
+          large venue (e.g. Jewel Changi's Rain Vortex or a drop-off point). */}
+      {showSpot && (
+        <div className="flex flex-col gap-2" data-testid="meeting-spot">
+          <label htmlFor="meeting-spot" className="text-sm font-semibold text-white/80">
+            {t.meetingSpotLabel}
+          </label>
+
+          <div className="flex flex-wrap gap-2">
+            {spotSuggestions.map((s) => {
+              const active = meetingSpot.trim() === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => onMeetingSpotChange(active ? "" : s)}
+                  aria-pressed={active}
+                  data-testid={`meeting-spot-chip-${s}`}
+                  className={`rounded-full px-3 py-2 text-sm min-h-[40px] border transition-all duration-150 active:scale-[0.97] focus:outline-none focus:ring-2 focus:ring-rose-400/50 ${
+                    active
+                      ? "bg-rose-500/25 border-rose-300 text-white"
+                      : "bg-slate-800/50 border-white/10 text-white/80 hover:bg-slate-700/70"
+                  }`}
+                >
+                  {s}
+                </button>
+              );
+            })}
+          </div>
+
+          <input
+            id="meeting-spot"
+            type="text"
+            value={meetingSpot}
+            onChange={(e) => onMeetingSpotChange(e.target.value)}
+            placeholder={t.meetingSpotPlaceholder}
+            aria-label={t.meetingSpotLabel}
+            autoComplete="off"
+            data-testid="meeting-spot-input"
             className="w-full rounded-xl bg-slate-800/60 backdrop-blur-sm border border-white/15 text-white placeholder-white/30 px-4 py-3 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-rose-400/50 focus:border-rose-400/50 transition"
           />
         </div>

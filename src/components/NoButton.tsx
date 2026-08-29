@@ -8,14 +8,14 @@ import { useDodge } from '../hooks/useDodge';
  * - Stage 0: no dodge
  * - Stage 1: no dodge
  * - Stage 2: dodge mode, 4 required dodges at 1.0x speed
- * - Stage 3: faster dodge mode, 5 required dodges at 1.3x speed
+ * - Stage 3: faster dodge mode, 4 required dodges at 1.3x speed
  */
 const DODGE_STAGES = {
   stages: [
     { dodgeEnabled: false, requiredDodges: 0, speedMultiplier: 1.0 },
     { dodgeEnabled: false, requiredDodges: 0, speedMultiplier: 1.0 },
     { dodgeEnabled: true, requiredDodges: 4, speedMultiplier: 1.0 },
-    { dodgeEnabled: true, requiredDodges: 5, speedMultiplier: 1.3 },
+    { dodgeEnabled: true, requiredDodges: 4, speedMultiplier: 1.3 },
   ],
 } as const;
 
@@ -31,7 +31,7 @@ interface NoButtonProps {
  * Implements a 4-stage button that progressively resists being clicked:
  * - First click: advances from "No" to "Are you sure?"
  * - Second click: enters dodge mode requiring 4 dodges before clickable
- * - Third click: enters faster dodge mode requiring 5 dodges
+ * - Third click: enters faster dodge mode requiring 4 dodges
  * - Final click: triggers rejection callback
  *
  * Uses CSS transform: translate() for position (GPU-friendly).
@@ -47,6 +47,8 @@ export default function NoButton({ onReject, labels }: NoButtonProps) {
     enabled: config.dodgeEnabled,
     requiredDodges: config.requiredDodges,
     speedMultiplier: config.speedMultiplier,
+    // Reset dodge progress per stage, even when two stages need the same count.
+    stageKey: stage,
     onDodgeComplete: () => {
       // Button becomes clickable — no additional action needed
     },

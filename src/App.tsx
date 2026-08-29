@@ -69,6 +69,8 @@ export default function AppRouter() {
         <ProposalFlow
           from={appState.from ?? ''}
           to={appState.to ?? ''}
+          senderGender={appState.senderGender}
+          evilMode={appState.evilMode}
           mode={mode}
           onModeChange={setMode}
           onDatePlanningReady={() => setShowDatePlanning(true)}
@@ -82,6 +84,7 @@ export default function AppRouter() {
           to={appState.to ?? ''}
           date={appState.date ?? ''}
           venue={appState.venue ?? ''}
+          spot={appState.spot}
           mode={mode}
         />
       );

@@ -14,6 +14,8 @@ export interface DatePassProps {
   date: string;
   /** Selected venue name. */
   venue: string;
+  /** Optional precise meeting spot within the venue. */
+  spot?: string;
   /** Current display/language mode (controlled by AppRouter). */
   mode: DisplayMode;
 }
@@ -55,7 +57,7 @@ function isWebShareSupported(): boolean {
  * The layout is mobile-responsive with min 44px touch targets (Requirement
  * 11.3).
  */
-export default function DatePass({ from, to, date, venue, mode }: DatePassProps) {
+export default function DatePass({ from, to, date, venue, spot, mode }: DatePassProps) {
   const t = translations[chromeLang(mode)];
   const humanDate = formatDateHuman(
     date,
@@ -212,6 +214,19 @@ export default function DatePass({ from, to, date, venue, mode }: DatePassProps)
                   {venue}
                 </dd>
               </div>
+              {spot && spot.trim().length > 0 && (
+                <div className="flex flex-col gap-1">
+                  <dt className="text-xs font-semibold uppercase tracking-wider text-rose-300/80">
+                    {t.meetingPointLabel}
+                  </dt>
+                  <dd
+                    data-testid="date-pass-spot"
+                    className="text-lg font-semibold text-white"
+                  >
+                    {spot}
+                  </dd>
+                </div>
+              )}
             </dl>
 
             {/* Sharing actions (Requirement 9). Stacks on mobile, side-by-side

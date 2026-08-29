@@ -20,10 +20,24 @@ export interface Translation {
   accept: string;
   happy: string;
   sad: string;
-  /** The 4 confession/proposal lines shown in the carousel, in order. */
-  dialogues: [string, string, string, string];
+  /** The confession/proposal lines shown in the carousel, in order. */
+  dialogues: string[];
   /** The 4 progressive "No" button stage labels, in order. */
   noStages: [string, string, string, string];
+
+  // Sender gender selection + gendered partner terms
+  /** Term substituted into `{partner}` when the sender is a man (asks a girlfriend). */
+  partnerGirlfriend: string;
+  /** Term substituted into `{partner}` when the sender is a woman (asks a boyfriend). */
+  partnerBoyfriend: string;
+  /** Label for the sender's gender selector, e.g. "I am…". */
+  genderLabel: string;
+  /** Gender option: man. */
+  genderMan: string;
+  /** Gender option: woman. */
+  genderWoman: string;
+  /** Optional feminine form of the happy message for gendered languages (e.g. FR). */
+  happyFemale?: string;
 
   // Creation screen
   creationTitle: string;
@@ -35,6 +49,7 @@ export interface Translation {
 
   // Calendar
   calendarTitle: string;
+  calendarSubtitle: string;
   monthNames: string[];      // 12 month names
   dayHeaders: string[];      // 7 day abbreviations (Sun-Sat)
   selectedDateLabel: string; // "Selected: {date}"
@@ -43,6 +58,9 @@ export interface Translation {
   venueTitle: string;
   customVenueLabel: string;
   customVenuePlaceholder: string;
+  meetingSpotLabel: string;
+  meetingSpotPlaceholder: string;
+  meetingPointLabel: string;
 
   // Confirmation
   confirmTitle: string;
@@ -54,6 +72,23 @@ export interface Translation {
   datePassTitle: string;
   dateConfirmedBadge: string;
   shareButton: string;
+
+  // Evil Mode celebration (shown when a `mode=evil` link's final "No" is clicked).
+  // The recipient never knows the mode exists — this is the cheeky payoff screen.
+  /** Big celebratory heading, e.g. "YAY!!!". */
+  evilYayTitle: string;
+  /** Main happy line, e.g. "I'm so glad you said yes." */
+  evilGladYes: string;
+  /** Cheeky wink at what they actually clicked. */
+  evilCheeky: string;
+  /** Optional supporting line thanking them for not rejecting. */
+  evilThankYou: string;
+
+  // Creation screen — Evil Mode toggle (sender-only, never shown to recipient).
+  /** Label for the Evil Mode toggle, e.g. "Enable Evil Mode 😈". */
+  evilModeLabel: string;
+  /** Short helper text explaining what Evil Mode does. */
+  evilModeHint: string;
 }
 
 export const translations: Record<LanguageCode, Translation> = {
@@ -70,10 +105,16 @@ export const translations: Record<LanguageCode, Translation> = {
     sad: '\uD83D\uDC94 Oh no...',
     dialogues: [
       'Actually\u2026 I\'ve been thinking about this for a long time.',
-      'I don\'t know when it started, but I realised I care about you more than I should.',
+      'I don\'t know when it started, but I realized I care about you more than I should.',
       '[Their Name]\u2026 I\'m scared this might make things awkward between us.',
-      'But\u2026 will you be my girlfriend?',
+      'But I still have to know\u2026',
+      'So, [Their Name]\u2026 will you be my {partner}?',
     ],
+    partnerGirlfriend: 'girlfriend',
+    partnerBoyfriend: 'boyfriend',
+    genderLabel: 'I am\u2026',
+    genderMan: 'A man',
+    genderWoman: 'A woman',
     noStages: ['No', 'Are you sure?', 'Please say yes...', 'Please...'],
     creationTitle: 'Create Your Proposal',
     senderNameLabel: 'Your Name',
@@ -81,7 +122,11 @@ export const translations: Record<LanguageCode, Translation> = {
     generateLink: 'Generate Link',
     linkCopied: '\u2713 Link copied!',
     copyLink: 'Copy Link',
-    calendarTitle: 'Pick a date for our first date',
+    calendarTitle: 'When shall we make our first memory? \u2728',
+    calendarSubtitle: 'Choose a day that feels special to you.',
+    meetingSpotLabel: 'Where exactly should we meet? (optional)',
+    meetingSpotPlaceholder: 'e.g. Main entrance, drop-off point',
+    meetingPointLabel: 'Meeting point',
     monthNames: [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December',
@@ -98,6 +143,12 @@ export const translations: Record<LanguageCode, Translation> = {
     datePassTitle: 'Date Pass',
     dateConfirmedBadge: 'DATE CONFIRMED',
     shareButton: 'Share',
+    evilYayTitle: 'YAY!!!',
+    evilGladYes: 'I\u2019m so glad you said yes.',
+    evilCheeky: 'We both know what you clicked, but let\u2019s not talk about that. \uD83D\uDE08',
+    evilThankYou: 'Thank you for not rejecting me \uD83D\uDE2D',
+    evilModeLabel: 'Enable Evil Mode \uD83D\uDE08',
+    evilModeHint: 'Even if they click \u201CNo\u201D, they\u2019ll still end up saying yes. They\u2019ll never know.',
   },
   zh: {
     disclaimerTitle: '\u58F0\u660E',
@@ -114,8 +165,14 @@ export const translations: Record<LanguageCode, Translation> = {
       '\u5176\u5B9E\u2026\u6211\u4E00\u76F4\u5728\u60F3\u8FD9\u4EF6\u4E8B\u3002',
       '\u6211\u4E0D\u77E5\u9053\u4ECE\u4EC0\u4E48\u65F6\u5019\u5F00\u59CB\uFF0C\u6211\u53D1\u73B0\u6211\u5BF9\u4F60\u7684\u5728\u4E4E\u5DF2\u7ECF\u8D85\u8FC7\u4E86\u6211\u7684\u9884\u671F\u3002',
       '[\u540D\u5B57]\u2026\u6211\u5F88\u5BB3\u6015\u8FD9\u6837\u4F1A\u8BA9\u6211\u4EEC\u4E4B\u95F4\u53D8\u5F97\u5C34\u5C2C\u3002',
-      '\u4F46\u662F\u2026\u4F60\u613F\u610F\u505A\u6211\u7684\u5973\u670B\u53CB\u5417\uFF1F',
+      '\u4F46\u6211\u8FD8\u662F\u60F3\u77E5\u9053\u2026',
+      '\u6240\u4EE5\uFF0C[\u540D\u5B57]\u2026\u4F60\u613F\u610F\u505A\u6211\u7684{partner}\u5417\uFF1F',
     ],
+    partnerGirlfriend: '\u5973\u670B\u53CB',
+    partnerBoyfriend: '\u7537\u670B\u53CB',
+    genderLabel: '\u6211\u662F\u2026',
+    genderMan: '\u7537\u751F',
+    genderWoman: '\u5973\u751F',
     noStages: ['\u4E0D', '\u4F60\u786E\u5B9A\u5417\uFF1F', '\u8BF7\u8BF4\u597D...', '\u6C42\u4F60\u4E86...'],
     creationTitle: '\u521B\u5EFA\u4F60\u7684\u544A\u767D',
     senderNameLabel: '\u4F60\u7684\u540D\u5B57',
@@ -123,7 +180,11 @@ export const translations: Record<LanguageCode, Translation> = {
     generateLink: '\u751F\u6210\u94FE\u63A5',
     linkCopied: '\u2713 \u94FE\u63A5\u5DF2\u590D\u5236\uFF01',
     copyLink: '\u590D\u5236\u94FE\u63A5',
-    calendarTitle: '\u9009\u4E00\u4E2A\u6211\u4EEC\u521D\u6B21\u7EA6\u4F1A\u7684\u65E5\u5B50',
+    calendarTitle: '我们何时，一起写下第一个回忆？\u2728',
+    calendarSubtitle: '选一个对你来说特别的日子。',
+    meetingSpotLabel: '具体在哪里见面？（可选）',
+    meetingSpotPlaceholder: '例如：正门、落客点',
+    meetingPointLabel: '见面地点',
     monthNames: [
       '\u4E00\u6708', '\u4E8C\u6708', '\u4E09\u6708', '\u56DB\u6708', '\u4E94\u6708', '\u516D\u6708',
       '\u4E03\u6708', '\u516B\u6708', '\u4E5D\u6708', '\u5341\u6708', '\u5341\u4E00\u6708', '\u5341\u4E8C\u6708',
@@ -140,6 +201,12 @@ export const translations: Record<LanguageCode, Translation> = {
     datePassTitle: '\u7EA6\u4F1A\u901A\u884C\u8BC1',
     dateConfirmedBadge: '\u7EA6\u4F1A\u5DF2\u786E\u8BA4',
     shareButton: '\u5206\u4EAB',
+    evilYayTitle: '\u8036\uFF01\uFF01\uFF01',
+    evilGladYes: '\u6211\u771F\u9AD8\u5174\u4F60\u7B54\u5E94\u4E86\u3002',
+    evilCheeky: '\u6211\u4EEC\u90FD\u77E5\u9053\u4F60\u521A\u521A\u70B9\u4E86\u4EC0\u4E48\uFF0C\u4E0D\u8FC7\u5C31\u4E0D\u63D0\u4E86\u3002\uD83D\uDE08',
+    evilThankYou: '\u8C22\u8C22\u4F60\u6CA1\u6709\u62D2\u7EDD\u6211 \uD83D\uDE2D',
+    evilModeLabel: '\u5F00\u542F\u6076\u9B54\u6A21\u5F0F \uD83D\uDE08',
+    evilModeHint: '\u5373\u4F7F TA \u70B9\u201C\u4E0D\u201D\uFF0C\u6700\u540E\u4E5F\u4F1A\u53D8\u6210\u613F\u610F\u3002TA \u6C38\u8FDC\u4E0D\u4F1A\u77E5\u9053\u3002',
   },
   es: {
     disclaimerTitle: 'Aviso',
@@ -156,8 +223,14 @@ export const translations: Record<LanguageCode, Translation> = {
       'La verdad\u2026 llevo mucho tiempo pensando en esto.',
       'No s\u00E9 cu\u00E1ndo empez\u00F3, pero me di cuenta de que me importas m\u00E1s de lo que deber\u00EDa.',
       '[Su nombre]\u2026 Tengo miedo de que esto haga las cosas inc\u00F3modas entre nosotros.',
-      'Pero\u2026 \u00BFquieres ser mi novia?',
+      'Pero a\u00FAn necesito saberlo\u2026',
+      'Entonces, [Su nombre]\u2026 \u00BFquieres ser mi {partner}?',
     ],
+    partnerGirlfriend: 'novia',
+    partnerBoyfriend: 'novio',
+    genderLabel: 'Soy\u2026',
+    genderMan: 'Un hombre',
+    genderWoman: 'Una mujer',
     noStages: ['No', '\u00BFEst\u00E1s segura?', 'Por favor di que s\u00ED...', 'Por favor...'],
     creationTitle: 'Create Your Proposal',
     senderNameLabel: 'Your Name',
@@ -165,7 +238,11 @@ export const translations: Record<LanguageCode, Translation> = {
     generateLink: 'Generate Link',
     linkCopied: '\u2713 Link copied!',
     copyLink: 'Copy Link',
-    calendarTitle: 'Pick a date for our first date',
+    calendarTitle: 'When shall we make our first memory? \u2728',
+    calendarSubtitle: 'Choose a day that feels special to you.',
+    meetingSpotLabel: 'Where exactly should we meet? (optional)',
+    meetingSpotPlaceholder: 'e.g. Main entrance, drop-off point',
+    meetingPointLabel: 'Meeting point',
     monthNames: [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December',
@@ -182,6 +259,12 @@ export const translations: Record<LanguageCode, Translation> = {
     datePassTitle: 'Date Pass',
     dateConfirmedBadge: 'DATE CONFIRMED',
     shareButton: 'Share',
+    evilYayTitle: 'YAY!!!',
+    evilGladYes: 'I\u2019m so glad you said yes.',
+    evilCheeky: 'We both know what you clicked, but let\u2019s not talk about that. \uD83D\uDE08',
+    evilThankYou: 'Thank you for not rejecting me \uD83D\uDE2D',
+    evilModeLabel: 'Enable Evil Mode \uD83D\uDE08',
+    evilModeHint: 'Even if they click \u201CNo\u201D, they\u2019ll still end up saying yes. They\u2019ll never know.',
   },
   fr: {
     disclaimerTitle: 'Avertissement',
@@ -198,8 +281,15 @@ export const translations: Record<LanguageCode, Translation> = {
       'En fait\u2026 j\u2019y pense depuis longtemps.',
       'Je ne sais pas quand \u00E7a a commenc\u00E9, mais j\u2019ai r\u00E9alis\u00E9 que je tiens \u00E0 toi plus que je ne le devrais.',
       '[Son nom]\u2026 J\u2019ai peur que \u00E7a rende les choses g\u00EAnantes entre nous.',
-      'Mais\u2026 veux-tu \u00EAtre ma petite amie\u00A0?',
+      'Mais j\u2019ai encore besoin de savoir\u2026',
+      'Alors, [Son nom]\u2026 veux-tu \u00EAtre {partner}\u00A0?',
     ],
+    partnerGirlfriend: 'ma petite amie',
+    partnerBoyfriend: 'mon petit ami',
+    genderLabel: 'Je suis\u2026',
+    genderMan: 'Un homme',
+    genderWoman: 'Une femme',
+    happyFemale: '\u2764\uFE0F Youpi\u00A0! Je suis si heureuse\u00A0!',
     noStages: ['Non', 'Tu es s\u00FBre\u00A0?', 'Dis oui, s\u2019il te pla\u00EEt...', 'S\u2019il te pla\u00EEt...'],
     creationTitle: 'Create Your Proposal',
     senderNameLabel: 'Your Name',
@@ -207,7 +297,11 @@ export const translations: Record<LanguageCode, Translation> = {
     generateLink: 'Generate Link',
     linkCopied: '\u2713 Link copied!',
     copyLink: 'Copy Link',
-    calendarTitle: 'Pick a date for our first date',
+    calendarTitle: 'When shall we make our first memory? \u2728',
+    calendarSubtitle: 'Choose a day that feels special to you.',
+    meetingSpotLabel: 'Where exactly should we meet? (optional)',
+    meetingSpotPlaceholder: 'e.g. Main entrance, drop-off point',
+    meetingPointLabel: 'Meeting point',
     monthNames: [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December',
@@ -224,6 +318,12 @@ export const translations: Record<LanguageCode, Translation> = {
     datePassTitle: 'Date Pass',
     dateConfirmedBadge: 'DATE CONFIRMED',
     shareButton: 'Share',
+    evilYayTitle: 'YAY!!!',
+    evilGladYes: 'I\u2019m so glad you said yes.',
+    evilCheeky: 'We both know what you clicked, but let\u2019s not talk about that. \uD83D\uDE08',
+    evilThankYou: 'Thank you for not rejecting me \uD83D\uDE2D',
+    evilModeLabel: 'Enable Evil Mode \uD83D\uDE08',
+    evilModeHint: 'Even if they click \u201CNo\u201D, they\u2019ll still end up saying yes. They\u2019ll never know.',
   },
   it: {
     disclaimerTitle: 'Avviso',
@@ -240,8 +340,14 @@ export const translations: Record<LanguageCode, Translation> = {
       'A dire il vero\u2026 ci penso da molto tempo.',
       'Non so quando sia iniziato, ma ho capito che tengo a te pi\u00F9 di quanto dovrei.',
       '[Il suo nome]\u2026 Ho paura che questo possa rendere le cose imbarazzanti tra noi.',
-      'Ma\u2026 vuoi essere la mia ragazza?',
+      'Ma ho ancora bisogno di saperlo\u2026',
+      'Allora, [Il suo nome]\u2026 vuoi essere {partner}?',
     ],
+    partnerGirlfriend: 'la mia ragazza',
+    partnerBoyfriend: 'il mio ragazzo',
+    genderLabel: 'Sono\u2026',
+    genderMan: 'Un uomo',
+    genderWoman: 'Una donna',
     noStages: ['No', 'Sei sicura?', 'Per favore d\u00EC di s\u00EC...', 'Ti prego...'],
     creationTitle: 'Create Your Proposal',
     senderNameLabel: 'Your Name',
@@ -249,7 +355,11 @@ export const translations: Record<LanguageCode, Translation> = {
     generateLink: 'Generate Link',
     linkCopied: '\u2713 Link copied!',
     copyLink: 'Copy Link',
-    calendarTitle: 'Pick a date for our first date',
+    calendarTitle: 'When shall we make our first memory? \u2728',
+    calendarSubtitle: 'Choose a day that feels special to you.',
+    meetingSpotLabel: 'Where exactly should we meet? (optional)',
+    meetingSpotPlaceholder: 'e.g. Main entrance, drop-off point',
+    meetingPointLabel: 'Meeting point',
     monthNames: [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December',
@@ -266,6 +376,12 @@ export const translations: Record<LanguageCode, Translation> = {
     datePassTitle: 'Date Pass',
     dateConfirmedBadge: 'DATE CONFIRMED',
     shareButton: 'Share',
+    evilYayTitle: 'YAY!!!',
+    evilGladYes: 'I\u2019m so glad you said yes.',
+    evilCheeky: 'We both know what you clicked, but let\u2019s not talk about that. \uD83D\uDE08',
+    evilThankYou: 'Thank you for not rejecting me \uD83D\uDE2D',
+    evilModeLabel: 'Enable Evil Mode \uD83D\uDE08',
+    evilModeHint: 'Even if they click \u201CNo\u201D, they\u2019ll still end up saying yes. They\u2019ll never know.',
   },
   pt: {
     disclaimerTitle: 'Aviso',
@@ -282,8 +398,14 @@ export const translations: Record<LanguageCode, Translation> = {
       'Na verdade\u2026 eu venho pensando nisso h\u00E1 muito tempo.',
       'N\u00E3o sei quando come\u00E7ou, mas percebi que me importo com voc\u00EA mais do que deveria.',
       '[Nome dela]\u2026 Tenho medo de que isso deixe as coisas estranhas entre n\u00F3s.',
-      'Mas\u2026 voc\u00EA quer ser minha namorada?',
+      'Mas eu ainda preciso saber\u2026',
+      'Ent\u00E3o, [Nome dela]\u2026 voc\u00EA quer ser {partner}?',
     ],
+    partnerGirlfriend: 'minha namorada',
+    partnerBoyfriend: 'meu namorado',
+    genderLabel: 'Eu sou\u2026',
+    genderMan: 'Um homem',
+    genderWoman: 'Uma mulher',
     noStages: ['N\u00E3o', 'Voc\u00EA tem certeza?', 'Por favor, diga sim...', 'Por favor...'],
     creationTitle: 'Create Your Proposal',
     senderNameLabel: 'Your Name',
@@ -291,7 +413,11 @@ export const translations: Record<LanguageCode, Translation> = {
     generateLink: 'Generate Link',
     linkCopied: '\u2713 Link copied!',
     copyLink: 'Copy Link',
-    calendarTitle: 'Pick a date for our first date',
+    calendarTitle: 'When shall we make our first memory? \u2728',
+    calendarSubtitle: 'Choose a day that feels special to you.',
+    meetingSpotLabel: 'Where exactly should we meet? (optional)',
+    meetingSpotPlaceholder: 'e.g. Main entrance, drop-off point',
+    meetingPointLabel: 'Meeting point',
     monthNames: [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December',
@@ -308,6 +434,12 @@ export const translations: Record<LanguageCode, Translation> = {
     datePassTitle: 'Date Pass',
     dateConfirmedBadge: 'DATE CONFIRMED',
     shareButton: 'Share',
+    evilYayTitle: 'YAY!!!',
+    evilGladYes: 'I\u2019m so glad you said yes.',
+    evilCheeky: 'We both know what you clicked, but let\u2019s not talk about that. \uD83D\uDE08',
+    evilThankYou: 'Thank you for not rejecting me \uD83D\uDE2D',
+    evilModeLabel: 'Enable Evil Mode \uD83D\uDE08',
+    evilModeHint: 'Even if they click \u201CNo\u201D, they\u2019ll still end up saying yes. They\u2019ll never know.',
   },
   de: {
     disclaimerTitle: 'Hinweis',
@@ -324,8 +456,14 @@ export const translations: Record<LanguageCode, Translation> = {
       'Eigentlich\u2026 denke ich schon lange dar\u00FCber nach.',
       'Ich wei\u00DF nicht, wann es angefangen hat, aber mir wurde klar, dass du mir mehr bedeutest, als du solltest.',
       '[Ihr Name]\u2026 Ich habe Angst, dass es die Dinge zwischen uns unangenehm macht.',
-      'Aber\u2026 m\u00F6chtest du meine Freundin sein?',
+      'Aber ich muss es trotzdem wissen\u2026',
+      'Also, [Ihr Name]\u2026 m\u00F6chtest du {partner} sein?',
     ],
+    partnerGirlfriend: 'meine Freundin',
+    partnerBoyfriend: 'mein Freund',
+    genderLabel: 'Ich bin\u2026',
+    genderMan: 'Ein Mann',
+    genderWoman: 'Eine Frau',
     noStages: ['Nein', 'Bist du sicher?', 'Bitte sag ja...', 'Bitte...'],
     creationTitle: 'Create Your Proposal',
     senderNameLabel: 'Your Name',
@@ -333,7 +471,11 @@ export const translations: Record<LanguageCode, Translation> = {
     generateLink: 'Generate Link',
     linkCopied: '\u2713 Link copied!',
     copyLink: 'Copy Link',
-    calendarTitle: 'Pick a date for our first date',
+    calendarTitle: 'When shall we make our first memory? \u2728',
+    calendarSubtitle: 'Choose a day that feels special to you.',
+    meetingSpotLabel: 'Where exactly should we meet? (optional)',
+    meetingSpotPlaceholder: 'e.g. Main entrance, drop-off point',
+    meetingPointLabel: 'Meeting point',
     monthNames: [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December',
@@ -350,6 +492,12 @@ export const translations: Record<LanguageCode, Translation> = {
     datePassTitle: 'Date Pass',
     dateConfirmedBadge: 'DATE CONFIRMED',
     shareButton: 'Share',
+    evilYayTitle: 'YAY!!!',
+    evilGladYes: 'I\u2019m so glad you said yes.',
+    evilCheeky: 'We both know what you clicked, but let\u2019s not talk about that. \uD83D\uDE08',
+    evilThankYou: 'Thank you for not rejecting me \uD83D\uDE2D',
+    evilModeLabel: 'Enable Evil Mode \uD83D\uDE08',
+    evilModeHint: 'Even if they click \u201CNo\u201D, they\u2019ll still end up saying yes. They\u2019ll never know.',
   },
   id: {
     disclaimerTitle: 'Pemberitahuan',
@@ -366,8 +514,14 @@ export const translations: Record<LanguageCode, Translation> = {
       'Sebenarnya\u2026 aku sudah lama memikirkan ini.',
       'Aku tidak tahu kapan dimulai, tapi aku sadar aku peduli padamu lebih dari yang seharusnya.',
       '[Namanya]\u2026 Aku takut ini akan membuat canggung di antara kita.',
-      'Tapi\u2026 maukah kamu menjadi pacarku?',
+      'Tapi aku tetap harus tahu\u2026',
+      'Jadi, [Namanya]\u2026 maukah kamu menjadi {partner}?',
     ],
+    partnerGirlfriend: 'pacarku',
+    partnerBoyfriend: 'pacarku',
+    genderLabel: 'Saya seorang\u2026',
+    genderMan: 'Laki-laki',
+    genderWoman: 'Perempuan',
     noStages: ['Tidak', 'Apakah kamu yakin?', 'Tolong bilang iya...', 'Kumohon...'],
     creationTitle: 'Create Your Proposal',
     senderNameLabel: 'Your Name',
@@ -375,7 +529,11 @@ export const translations: Record<LanguageCode, Translation> = {
     generateLink: 'Generate Link',
     linkCopied: '\u2713 Link copied!',
     copyLink: 'Copy Link',
-    calendarTitle: 'Pick a date for our first date',
+    calendarTitle: 'When shall we make our first memory? \u2728',
+    calendarSubtitle: 'Choose a day that feels special to you.',
+    meetingSpotLabel: 'Where exactly should we meet? (optional)',
+    meetingSpotPlaceholder: 'e.g. Main entrance, drop-off point',
+    meetingPointLabel: 'Meeting point',
     monthNames: [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December',
@@ -392,6 +550,12 @@ export const translations: Record<LanguageCode, Translation> = {
     datePassTitle: 'Date Pass',
     dateConfirmedBadge: 'DATE CONFIRMED',
     shareButton: 'Share',
+    evilYayTitle: 'YAY!!!',
+    evilGladYes: 'I\u2019m so glad you said yes.',
+    evilCheeky: 'We both know what you clicked, but let\u2019s not talk about that. \uD83D\uDE08',
+    evilThankYou: 'Thank you for not rejecting me \uD83D\uDE2D',
+    evilModeLabel: 'Enable Evil Mode \uD83D\uDE08',
+    evilModeHint: 'Even if they click \u201CNo\u201D, they\u2019ll still end up saying yes. They\u2019ll never know.',
   },
 };
 
