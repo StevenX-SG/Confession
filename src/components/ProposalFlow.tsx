@@ -398,7 +398,7 @@ export default function ProposalFlow({
           onContinue={() => setShowDisclaimer(false)}
         />
       ) : (
-        <div className={`relative z-20 -mt-16 flex h-screen flex-col items-center justify-center px-4 ${isMobile ? 'pb-8' : ''}`}>
+        <div className={`relative z-20 flex h-screen flex-col items-center justify-center px-4 ${isMobile ? 'pb-8' : ''}`}>
           {/* Conditional GIF display based on final response */}
           {finalResponse === 'yes' && (
             <img

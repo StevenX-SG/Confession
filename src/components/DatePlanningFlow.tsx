@@ -132,7 +132,12 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
         }}
       />
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-16">
+      {/* Scroll container so the calendar (taller than a short / 100%-zoom
+          viewport) stays fully reachable: it centers when it fits and scrolls
+          without clipping the top when it doesn't. Body overflow is hidden
+          globally, so this view manages its own vertical scroll. */}
+      <div className="relative z-10 h-screen overflow-y-auto overscroll-contain">
+        <div className="flex min-h-full flex-col items-center justify-center px-4 py-8">
         {/* GlassCard entry animation (Req 4.4). Midnight Rose treatment: deep
             navy glass with a moonlight-blue border + glow so it floats in the
             starry sky instead of reading as a productivity panel. */}
@@ -184,6 +189,7 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
         visible={step === "calendar" && guideVisible}
         targetRef={calendarRef}
       />
+        </div>
       </div>
     </div>
   );
