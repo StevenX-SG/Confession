@@ -23,3 +23,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Kiro workspace tooling (specs, hooks, steering) - local only
+.kiro/
+
+# Demo assets
+demo.gif
