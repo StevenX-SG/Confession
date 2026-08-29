@@ -11,7 +11,13 @@ export default defineConfig({
       output: {
         format: "iife",
         name: "app",
-        entryFileNames: "assets/[name].js",
+        // Content-hashed filenames so every deploy produces unique asset URLs.
+        // Without the hash the bundle was always "assets/index.js", so browsers
+        // and the GitHub Pages CDN kept serving a stale cached copy after each
+        // deploy. The hash changes whenever the code changes, busting the cache.
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash][extname]",
       },
     },
   },
