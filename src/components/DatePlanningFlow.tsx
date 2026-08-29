@@ -5,6 +5,7 @@ import StarfieldCanvas from "./StarfieldCanvas";
 import DatePass from "./DatePass";
 import CalendarComponent from "./CalendarComponent";
 import FingerGuide from "./FingerGuide";
+import FitToScreen from "./FitToScreen";
 import VenueSelector from "./VenueSelector";
 import ConfirmationScreen from "./ConfirmationScreen";
 import { type DisplayMode } from "../i18n";
@@ -132,16 +133,15 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
         }}
       />
 
-      {/* Scroll container so the calendar (taller than a short / 100%-zoom
-          viewport) stays fully reachable: it centers when it fits and scrolls
-          without clipping the top when it doesn't. Body overflow is hidden
-          globally, so this view manages its own vertical scroll. */}
-      <div className="relative z-10 h-screen overflow-y-auto overscroll-contain">
-        <div className="flex min-h-full flex-col items-center justify-center px-4 py-8">
+      {/* Fit-to-screen wrapper: instead of scrolling, the card is scaled down
+          (never up) so the whole calendar/venue/confirm step stays centered and
+          fully visible even on short or zoomed-in windows. */}
+      <FitToScreen className="relative z-10">
         {/* GlassCard entry animation (Req 4.4). Midnight Rose treatment: deep
             navy glass with a moonlight-blue border + glow so it floats in the
-            starry sky instead of reading as a productivity panel. */}
-        <GlassCard className="!bg-[#0b1226]/45 !border-sky-200/20 shadow-[0_12px_70px_-12px_rgba(96,140,255,0.45)] ring-1 ring-sky-300/10">
+            starry sky instead of reading as a productivity panel. The explicit
+            width keeps the scale measurement unambiguous. */}
+        <GlassCard className="!w-[min(92vw,560px)] !bg-[#0b1226]/45 !border-sky-200/20 shadow-[0_12px_70px_-12px_rgba(96,140,255,0.45)] ring-1 ring-sky-300/10">
         {/* Calendar step — full monthly grid with month nav + past-date
             disabling (task 6.1), guided by the FingerGuide hint (task 6.2). */}
         {step === "calendar" && (
@@ -182,15 +182,15 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
           />
         )}
       </GlassCard>
+      </FitToScreen>
 
       {/* Animated pointing hint drawing attention to the calendar during the
-          surprise reveal; dismissed on first interaction (Requirement 5). */}
+          surprise reveal; dismissed on first interaction (Requirement 5).
+          Positioned against the (now scaled) calendar via its bounding rect. */}
       <FingerGuide
         visible={step === "calendar" && guideVisible}
         targetRef={calendarRef}
       />
-        </div>
-      </div>
     </div>
   );
 }
