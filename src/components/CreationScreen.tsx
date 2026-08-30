@@ -5,6 +5,7 @@ import GlassCard from "./GlassCard";
 import FitToScreen from "./FitToScreen";
 import { translations, chromeLang, LANGUAGE_OPTIONS, type DisplayMode } from "../i18n";
 import { buildProposalUrl, validateName } from "../utils/urlParams";
+import { REGION_OPTIONS, DEFAULT_REGION, type Region } from "../utils/regions";
 
 export interface CreationScreenProps {
   /** Current display/language mode (controlled by AppRouter). */
@@ -79,6 +80,10 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
   // so the recipient's final "No" secretly leads to the happy ending. This flag
   // never appears in the recipient experience.
   const [evilMode, setEvilMode] = useState(false);
+  // Sender's country — chosen here so the recipient's venue step suggests spots
+  // that fit that country. Encoded into the link; "other" means no presets (the
+  // recipient just types their own venue).
+  const [region, setRegion] = useState<Region>(DEFAULT_REGION);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -110,11 +115,11 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
       // Trim so leading/trailing whitespace doesn't leak into the shared link,
       // while the validity check above still guarantees non-empty names.
       setGeneratedLink(
-        buildProposalUrl(senderName.trim(), recipientName.trim(), gender, evilMode)
+        buildProposalUrl(senderName.trim(), recipientName.trim(), gender, evilMode, region)
       );
       setCopied(false);
     },
-    [canSubmit, senderName, recipientName, gender, evilMode]
+    [canSubmit, senderName, recipientName, gender, evilMode, region]
   );
 
   const showCopiedFeedback = useCallback(() => {
@@ -247,6 +252,32 @@ export default function CreationScreen({ mode, onModeChange }: CreationScreenPro
                 autoComplete="off"
                 className="w-full rounded-xl bg-slate-800/60 backdrop-blur-sm border border-white/15 text-white placeholder-white/30 px-4 py-3 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-rose-400/50 focus:border-rose-400/50 transition"
               />
+            </div>
+
+            {/* Sender's country — sets which venue presets the recipient sees.
+                "Other" shows no presets (recipient types their own venue). */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="region-select" className="text-sm font-semibold text-white/80">
+                {t.venueRegionLabel}
+              </label>
+              <select
+                id="region-select"
+                value={region}
+                onChange={(e) => {
+                  setRegion(e.target.value as Region);
+                  // Previously generated link used the old country; clear it so
+                  // the sender regenerates with the correct venue presets.
+                  setGeneratedLink(null);
+                  setCopied(false);
+                }}
+                className="w-full rounded-xl bg-slate-800/60 backdrop-blur-sm border border-white/15 text-white px-4 py-3 min-h-[44px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-400/50 focus:border-rose-400/50 transition"
+              >
+                {REGION_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value} className="bg-slate-800 text-white">
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Evil Mode toggle — sender-only prank switch. Never surfaced to the

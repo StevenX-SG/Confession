@@ -61,6 +61,7 @@ export default function AppRouter() {
           <DatePlanningFlow
             from={appState.from ?? ''}
             to={appState.to ?? ''}
+            region={appState.region}
             mode={mode}
           />
         );

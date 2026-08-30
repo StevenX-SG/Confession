@@ -5,6 +5,7 @@
  * refresh persistence without a backend. These functions are exported as named
  * exports so components and property tests can import them independently.
  */
+import { type Region, toRegion, DEFAULT_REGION } from './regions';
 
 /**
  * The view state derived from the current URL search parameters.
@@ -31,6 +32,11 @@ export interface AppState {
    * links (which predate this feature) parse back to `false`.
    */
   evilMode?: boolean;
+  /**
+   * Sender's country (from the packed token). Drives which venue presets the
+   * recipient sees on the date-planning step. Legacy links default to `sg`.
+   */
+  region?: Region;
 }
 
 // --- Proposal payload obfuscation --------------------------------------------
@@ -57,6 +63,8 @@ export interface ProposalPayload {
   to: string;
   gender: 'man' | 'woman';
   evil: boolean;
+  /** Sender's country — drives which venue presets the recipient sees. */
+  region: Region;
 }
 
 function bytesToBase64Url(bytes: Uint8Array): string {
@@ -86,6 +94,7 @@ export function encodeProposalToken(payload: ProposalPayload): string {
     payload.to,
     payload.gender === 'woman' ? 'w' : 'm',
     payload.evil ? 1 : 0,
+    payload.region,
   ]);
   const utf8 = new TextEncoder().encode(json);
   const salt = Math.floor(Math.random() * 256);
@@ -114,7 +123,7 @@ export function decodeProposalToken(token: string | null): ProposalPayload | nul
     }
     const arr = JSON.parse(new TextDecoder().decode(utf8));
     if (!Array.isArray(arr) || arr.length < 4) return null;
-    const [from, to, g, evil] = arr;
+    const [from, to, g, evil, region] = arr;
     if (typeof from !== 'string' || typeof to !== 'string') return null;
     if (!validateName(from) || !validateName(to)) return null;
     return {
@@ -122,6 +131,8 @@ export function decodeProposalToken(token: string | null): ProposalPayload | nul
       to,
       gender: g === 'w' ? 'woman' : 'man',
       evil: evil === 1 || evil === true,
+      // Legacy links (pre-region) have no 5th element -> default region.
+      region: toRegion(region),
     };
   } catch {
     // Any decoding/JSON error means this isn't one of our tokens.
@@ -218,13 +229,14 @@ export function parseUrlParams(): AppState {
       to: packed.to,
       senderGender: packed.gender,
       evilMode: packed.evil,
+      region: packed.region,
     };
   }
 
   // Legacy fallback: plaintext `from`/`to` links created before tokenisation.
   // These predate Evil Mode, so they are always treated as normal mode.
   if (from && to) {
-    return { view: 'proposal', from, to, senderGender, evilMode: false };
+    return { view: 'proposal', from, to, senderGender, evilMode: false, region: DEFAULT_REGION };
   }
 
   return { view: 'creation' };
@@ -248,22 +260,24 @@ function baseUrl(): string {
  * @param gender - Sender's gender (controls gendered wording)
  * @param evil - When true, the Evil Mode flag is folded into the token so the
  *   final "No" secretly routes into the happy celebration flow.
+ * @param region - Sender's country, driving the recipient's venue presets.
  * @returns Full URL string, e.g. `https://host/path?c=Zk9hMm..` — everything
- *   (names, gender, Evil Mode) is packed into one opaque, salted token, so the
- *   recipient can't read the names or tell that Evil Mode is enabled.
+ *   (names, gender, Evil Mode, region) is packed into one opaque, salted token,
+ *   so the recipient can't read the names or tell that Evil Mode is enabled.
  */
 export function buildProposalUrl(
   from: string,
   to: string,
   gender: 'man' | 'woman' = 'man',
-  evil = false
+  evil = false,
+  region: Region = DEFAULT_REGION
 ): string {
   const params = new URLSearchParams();
   // The whole payload lives in a single opaque token. Salting means even the
   // exact same inputs yield a different-looking link each time.
   params.set(
     PROPOSAL_TOKEN_PARAM,
-    encodeProposalToken({ from, to, gender, evil })
+    encodeProposalToken({ from, to, gender, evil, region })
   );
   return `${baseUrl()}?${params.toString()}`;
 }

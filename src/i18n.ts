@@ -56,6 +56,8 @@ export interface Translation {
 
   // Venue
   venueTitle: string;
+  /** Creation-screen label for the sender's country selector. */
+  venueRegionLabel: string;
   customVenueLabel: string;
   customVenuePlaceholder: string;
   meetingSpotLabel: string;
@@ -117,6 +119,7 @@ export const translations: Record<LanguageCode, Translation> = {
     genderWoman: 'A woman',
     noStages: ['No', 'Are you sure?', 'Please say yes...', 'Please...'],
     creationTitle: 'Create Your Proposal',
+    venueRegionLabel: 'Your country (sets venue ideas)',
     senderNameLabel: 'Your Name',
     recipientNameLabel: 'Their Name',
     generateLink: 'Generate Link',
@@ -175,6 +178,7 @@ export const translations: Record<LanguageCode, Translation> = {
     genderWoman: '\u5973\u751F',
     noStages: ['\u4E0D', '\u4F60\u786E\u5B9A\u5417\uFF1F', '\u8BF7\u8BF4\u597D...', '\u6C42\u4F60\u4E86...'],
     creationTitle: '\u521B\u5EFA\u4F60\u7684\u544A\u767D',
+    venueRegionLabel: '\u4F60\u7684\u56FD\u5BB6\uFF08\u7528\u4E8E\u573A\u5730\u5EFA\u8BAE\uFF09',
     senderNameLabel: '\u4F60\u7684\u540D\u5B57',
     recipientNameLabel: 'TA\u7684\u540D\u5B57',
     generateLink: '\u751F\u6210\u94FE\u63A5',
@@ -233,6 +237,7 @@ export const translations: Record<LanguageCode, Translation> = {
     genderWoman: 'Una mujer',
     noStages: ['No', '\u00BFEst\u00E1s segura?', 'Por favor di que s\u00ED...', 'Por favor...'],
     creationTitle: 'Crea tu propuesta',
+    venueRegionLabel: 'Tu pa\u00EDs (ideas de lugares)',
     senderNameLabel: 'Tu nombre',
     recipientNameLabel: 'Su nombre',
     generateLink: 'Generar enlace',
@@ -292,6 +297,7 @@ export const translations: Record<LanguageCode, Translation> = {
     happyFemale: '\u2764\uFE0F Youpi\u00A0! Je suis si heureuse\u00A0!',
     noStages: ['Non', 'Tu es s\u00FBre\u00A0?', 'Dis oui, s\u2019il te pla\u00EEt...', 'S\u2019il te pla\u00EEt...'],
     creationTitle: 'Cr\u00E9e ta demande',
+    venueRegionLabel: 'Ton pays (id\u00E9es de lieux)',
     senderNameLabel: 'Ton nom',
     recipientNameLabel: 'Son nom',
     generateLink: 'G\u00E9n\u00E9rer le lien',
@@ -350,6 +356,7 @@ export const translations: Record<LanguageCode, Translation> = {
     genderWoman: 'Una donna',
     noStages: ['No', 'Sei sicura?', 'Per favore d\u00EC di s\u00EC...', 'Ti prego...'],
     creationTitle: 'Crea la tua proposta',
+    venueRegionLabel: 'Il tuo paese (idee sui luoghi)',
     senderNameLabel: 'Il tuo nome',
     recipientNameLabel: 'Il suo nome',
     generateLink: 'Genera link',
@@ -408,6 +415,7 @@ export const translations: Record<LanguageCode, Translation> = {
     genderWoman: 'Uma mulher',
     noStages: ['N\u00E3o', 'Voc\u00EA tem certeza?', 'Por favor, diga sim...', 'Por favor...'],
     creationTitle: 'Crie seu pedido',
+    venueRegionLabel: 'Seu pa\u00EDs (sugest\u00F5es de locais)',
     senderNameLabel: 'Seu nome',
     recipientNameLabel: 'Nome da pessoa',
     generateLink: 'Gerar link',
@@ -466,6 +474,7 @@ export const translations: Record<LanguageCode, Translation> = {
     genderWoman: 'Eine Frau',
     noStages: ['Nein', 'Bist du sicher?', 'Bitte sag ja...', 'Bitte...'],
     creationTitle: 'Erstelle deinen Antrag',
+    venueRegionLabel: 'Dein Land (Vorschl\u00E4ge f\u00FCr Orte)',
     senderNameLabel: 'Dein Name',
     recipientNameLabel: 'Ihr Name',
     generateLink: 'Link erstellen',
@@ -524,6 +533,7 @@ export const translations: Record<LanguageCode, Translation> = {
     genderWoman: 'Perempuan',
     noStages: ['Tidak', 'Apakah kamu yakin?', 'Tolong bilang iya...', 'Kumohon...'],
     creationTitle: 'Buat pernyataanmu',
+    venueRegionLabel: 'Negaramu (saran tempat)',
     senderNameLabel: 'Namamu',
     recipientNameLabel: 'Nama dia',
     generateLink: 'Buat tautan',

@@ -10,12 +10,15 @@ import VenueSelector from "./VenueSelector";
 import ConfirmationScreen from "./ConfirmationScreen";
 import { type DisplayMode } from "../i18n";
 import { buildConfirmationUrl } from "../utils/urlParams";
+import { DEFAULT_REGION, type Region } from "../utils/regions";
 
 export interface DatePlanningFlowProps {
   /** Sender's name (carried through into the confirmation URL). */
   from: string;
   /** Recipient's name (the one planning the date). */
   to: string;
+  /** Sender's country — selects which venue presets the recipient sees. */
+  region?: Region;
   /** Current display/language mode (controlled by the parent). */
   mode: DisplayMode;
 }
@@ -55,7 +58,7 @@ export type PlanningStep = "calendar" | "venue" | "confirm" | "done";
  * - ConfirmationScreen (task 7.3)
  * - DatePass           (task 9.1)
  */
-export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowProps) {
+export default function DatePlanningFlow({ from, to, region = DEFAULT_REGION, mode }: DatePlanningFlowProps) {
   const [step, setStep] = useState<PlanningStep>("calendar");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
@@ -164,6 +167,7 @@ export default function DatePlanningFlow({ from, to, mode }: DatePlanningFlowPro
             onContinue={handleVenueContinue}
             meetingSpot={selectedSpot}
             onMeetingSpotChange={setSelectedSpot}
+            region={region}
             mode={mode}
           />
         )}

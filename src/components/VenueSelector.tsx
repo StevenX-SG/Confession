@@ -2,22 +2,7 @@
 import { useCallback, useState } from "react";
 import { translations, chromeLang, type DisplayMode } from "../i18n";
 import { isVenueValid } from "../utils/venueValidation";
-
-/**
- * Preset venue choices offered before the custom option (Requirement 7.2).
- * Declared `as const` so the values are a readonly string tuple.
- */
-export const PRESET_VENUES = [
-  "Marina Bay",
-  "Gardens by the Bay",
-  "Jewel Changi Airport",
-  "Sentosa",
-] as const;
-
-/** A sentinel comparison helper so the readonly tuple can be membership-tested. */
-function isPresetVenue(value: string | null): boolean {
-  return value != null && (PRESET_VENUES as readonly string[]).includes(value);
-}
+import { VENUES_BY_REGION, DEFAULT_REGION, type Region } from "../utils/regions";
 
 /**
  * Suggested precise meeting spots per preset venue, so large venues (e.g. Jewel
@@ -52,6 +37,12 @@ export interface VenueSelectorProps {
   meetingSpot: string;
   /** Reports changes to the optional meeting spot. */
   onMeetingSpotChange: (spot: string) => void;
+  /**
+   * Sender's country (from the link). Selects which curated venue presets to
+   * show. `other` (or an empty list) shows no presets — the recipient types
+   * their own venue via the Custom option.
+   */
+  region?: Region;
 }
 
 /**
@@ -80,14 +71,21 @@ export default function VenueSelector({
   mode,
   meetingSpot,
   onMeetingSpotChange,
+  region = DEFAULT_REGION,
 }: VenueSelectorProps) {
   const t = translations[chromeLang(mode)];
 
-  // Whether the Custom option is the active choice. Initialize from the
-  // incoming selection: a non-null value that isn't a preset means the custom
-  // path was taken (e.g. returning to this step).
+  // Curated presets for the sender's country. Empty for `other` — the recipient
+  // then enters their own venue via the Custom option.
+  const presetVenues = VENUES_BY_REGION[region] ?? [];
+  const isPresetVenue = (value: string | null): boolean =>
+    value != null && presetVenues.includes(value);
+
+  // Whether the Custom option is the active choice. Initialize from the incoming
+  // selection: a non-preset value means the custom path was taken. When there
+  // are no presets (e.g. "other"), custom is the only path, so start there.
   const [isCustom, setIsCustom] = useState<boolean>(
-    () => selectedVenue != null && !isPresetVenue(selectedVenue)
+    () => presetVenues.length === 0 || (selectedVenue != null && !isPresetVenue(selectedVenue))
   );
 
   // The current custom-venue text. Seeded from a non-preset incoming selection.
@@ -123,8 +121,12 @@ export default function VenueSelector({
   const canContinue = isVenueValid(selectedVenue);
   // The optional meeting-spot section appears once a valid venue is chosen.
   const showSpot = canContinue;
+  // Curated per-venue spots exist for Singapore landmarks; the generic English
+  // fallback only makes sense for the SG (English) flow, so other countries show
+  // no chips and just the free-text meeting-spot field (localized placeholder).
   const spotSuggestions =
-    (selectedVenue && SPOT_SUGGESTIONS[selectedVenue]) || GENERIC_SPOTS;
+    (selectedVenue && SPOT_SUGGESTIONS[selectedVenue]) ||
+    (region === 'sg' ? GENERIC_SPOTS : []);
 
   const optionBase =
     "flex items-center gap-3 w-full text-left rounded-xl px-4 py-3 min-h-[44px] border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-rose-400/50 cursor-pointer active:scale-[0.99]";
@@ -149,7 +151,7 @@ export default function VenueSelector({
 
       {/* Options stack vertically on all sizes for easy mobile tapping (Req 11.2). */}
       <div role="radiogroup" aria-label={t.venueTitle} className="flex flex-col gap-3">
-        {PRESET_VENUES.map((venue) => {
+        {presetVenues.map((venue) => {
           const active = !isCustom && selectedVenue === venue;
           return (
             <button
@@ -220,7 +222,7 @@ export default function VenueSelector({
             {t.meetingSpotLabel}
           </label>
 
-          <div className="flex flex-wrap gap-2">
+          <div className={`flex-wrap gap-2 ${spotSuggestions.length > 0 ? "flex" : "hidden"}`}>
             {spotSuggestions.map((s) => {
               const active = meetingSpot.trim() === s;
               return (
